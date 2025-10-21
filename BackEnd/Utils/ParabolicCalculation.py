@@ -1,9 +1,8 @@
 
 PI = 3.141592653589793
 
-# ----------------------------------------------------------
 # FUNCIONES MATEMÁTICAS
-# ----------------------------------------------------------
+
 
 def factorial(n):
     if n == 0:
@@ -61,12 +60,10 @@ def radianes_a_grados(radianes):
     return radianes * (180 / PI)
 
 
-# ----------------------------------------------------------
 # FUNCIÓN PRINCIPAL
-# ----------------------------------------------------------
 
 def calcular_tiro(distancia, altura):
-    # Verificación del tipo básico sin "and" ni "or"
+    # Verificación del tipo básico
     es_numero_dist = 0
     if type(distancia) == int:
         es_numero_dist = 1
