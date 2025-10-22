@@ -1,9 +1,6 @@
-
 PI = 3.141592653589793
 
-# FUNCIONES MATEMÁTICAS
-
-
+# Calcula el factorial de un número (usado en las series de Taylor)
 def factorial(n):
     if n == 0:
         return 1
@@ -11,18 +8,13 @@ def factorial(n):
         return 1
     return n * factorial(n - 1)
 
-
+# Calcula el seno de un ángulo en grados usando la serie de Taylor
 def sin_grados(angulo):
-    # Normalizar ángulo entre 0 y 360
     while angulo >= 360:
         angulo = angulo - 360
     while angulo < 0:
         angulo = angulo + 360
-
-    # Convertir a radianes
     x = angulo * (PI / 180)
-
-    # Serie de Taylor del seno
     seno = 0
     i = 0
     while i < 7:
@@ -30,12 +22,10 @@ def sin_grados(angulo):
         termino = (x ** (2 * i + 1)) / factorial(2 * i + 1)
         seno = seno + signo * termino
         i = i + 1
-
     return seno
 
-
+# Calcula arctan(x) en radianes usando la serie de Taylor (aproximación)
 def arctan(x):
-    # arctan(x) ≈ x - x^3/3 + x^5/5 - ...
     if x >= -1:
         if x <= 1:
             arc = 0
@@ -46,102 +36,95 @@ def arctan(x):
                 arc = arc + signo * termino
                 i = i + 1
             return arc
-
-    # Si x > 1
     if x > 1:
         return (PI / 2) - (1 / x)
-
-    # Si x < -1
     if x < -1:
         return (-PI / 2) - (1 / x)
 
-
+# Convierte radianes a grados
 def radianes_a_grados(radianes):
     return radianes * (180 / PI)
 
+# Verifica si una cadena es un número (entero o decimal)
+def es_numero(texto):
+    i = 0
+    puntos = 0
+    if len(texto) == 0:
+        return 0
+    while i < len(texto):
+        c = texto[i]
+        if c == ".":
+            puntos = puntos + 1
+        else:
+            if c < "0":
+                return 0
+            if c > "9":
+                return 0
+        i = i + 1
+    if puntos > 1:
+        return 0
+    return 1
 
-# FUNCIÓN PRINCIPAL
-
+# Calcula el ángulo (θ0) y la velocidad inicial (v0)
+# usando las fórmulas físicas del movimiento parabólico
 def calcular_tiro(distancia, altura):
-    # Verificación del tipo básico
     es_numero_dist = 0
     if type(distancia) == int:
         es_numero_dist = 1
     if type(distancia) == float:
         es_numero_dist = 1
-
     es_numero_alt = 0
     if type(altura) == int:
         es_numero_alt = 1
     if type(altura) == float:
         es_numero_alt = 1
-
     if es_numero_dist == 0:
         return "Error01"
     if es_numero_alt == 0:
         return "Error01"
 
-    # Constante gravitacional
     g = 9.8
-
-    # Calcular ángulo θ0 = arctan(4H / R)
-    relacion = (4 * altura) / distancia
-    theta_radianes = arctan(relacion)
-    angulo = radianes_a_grados(theta_radianes)
-
-    # Calcular seno(θ0)
-    seno_theta = sin_grados(angulo)
+    relacion = (4 * altura) / distancia               # Relación 4H/R
+    theta_radianes = arctan(relacion)                 # Ángulo en radianes
+    angulo = radianes_a_grados(theta_radianes)        # Ángulo en grados
+    seno_theta = sin_grados(angulo)                   # Seno del ángulo
     seno_cuadrado = seno_theta * seno_theta
-
-    # Calcular velocidad inicial v0 = sqrt((2*g*H) / sin²θ)
-    v0 = ((2 * g * altura) / seno_cuadrado) ** 0.5
-
+    v0 = ((2 * g * altura) / seno_cuadrado) ** 0.5    # Fórmula de velocidad inicial
     return angulo, v0
 
-
-# PRUEBA DESDE TERMINAL
-
+# Programa principal interactivo desde terminal
 print("=== Simulador matemático de tiro parabólico ===")
 print("Use 'salir' para terminar.\n")
 
 seguir = 1
 while seguir == 1:
     texto_R = input("Distancia horizontal máxima (m): ")
-
     if texto_R == "salir":
         seguir = 0
-
     if seguir == 1:
         texto_H = input("Altura máxima (m): ")
-
         if texto_H == "salir":
             seguir = 0
 
     if seguir == 1:
-        es_numero_R = 0
-        if texto_R.isnumeric():
-            es_numero_R = 1
-
-        es_numero_H = 0
-        if texto_H.isnumeric():
-            es_numero_H = 1
-
-        if es_numero_R == 1:
-            if es_numero_H == 1:
+        valido_R = es_numero(texto_R)
+        valido_H = es_numero(texto_H)
+        if valido_R == 1:
+            if valido_H == 1:
                 R = float(texto_R)
                 H = float(texto_H)
                 resultado = calcular_tiro(R, H)
-
                 if resultado != "Error01":
                     angulo = resultado[0]
                     velocidad = resultado[1]
                     print("\nResultados:")
                     print("  Ángulo de lanzamiento:", round(angulo, 4), "°")
                     print("  Velocidad inicial:", round(velocidad, 4), "m/s\n")
-
-        if es_numero_R == 0:
-            print("Entrada no válida. Escriba solo números o 'salir'.\n")
-        if es_numero_H == 0:
-            print("Entrada no válida. Escriba solo números o 'salir'.\n")
+        if valido_R == 0:
+            print("Entrada no válida.\n")
+        if valido_H == 0:
+            print("Entrada no válida.\n")
 
 print("Programa finalizado.")
+
+
