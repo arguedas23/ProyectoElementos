@@ -1,45 +1,49 @@
 PI = 3.141592653589793
 
-# Calcula el factorial de un número (usado en las series de Taylor)
 def factorial(n):
-    if n == 0:
+    if n == 0 or n == 1:
         return 1
-    if n == 1:
-        return 1
-    return n * factorial(n - 1)
+    resultado = 1
+    for i in range(2, n + 1):
+        resultado *= i
+    return resultado
 
-# Calcula el seno de un ángulo en grados usando la serie de Taylor
-def sin_grados(angulo):
-    while angulo >= 360:
-        angulo = angulo - 360
-    while angulo < 0:
-        angulo = angulo + 360
+
+def sin_grados(angulo, terms=7):
     x = angulo * (PI / 180)
+
+    x = ((x + PI) % (2 * PI)) - PI
+
     seno = 0
-    i = 0
-    while i < 7:
-        signo = (-1) ** i
-        termino = (x ** (2 * i + 1)) / factorial(2 * i + 1)
-        seno = seno + signo * termino
-        i = i + 1
+    for n in range(terms):
+        signo = (-1) ** n
+        termino = (x ** (2 * n + 1)) / factorial(2 * n + 1)
+        seno += signo * termino
     return seno
 
-# Calcula arctan(x) en radianes usando la serie de Taylor (aproximación)
+
+PI = 3.141592653589793
+
 def arctan(x):
-    if x >= -1:
-        if x <= 1:
-            arc = 0
-            i = 0
-            while i < 10:
-                signo = (-1) ** i
-                termino = (x ** (2 * i + 1)) / (2 * i + 1)
-                arc = arc + signo * termino
-                i = i + 1
-            return arc
+    # Si está en el rango [-1, 1]
+    if x >= -1 and x <= 1:
+        arc = 0
+        i = 0
+        while i < 10:  # número de términos de la serie
+            signo = (-1) ** i
+            termino = (x ** (2 * i + 1)) / (2 * i + 1)
+            arc = arc + signo * termino
+            i = i + 1
+        return arc
+
+    # Si es mayor a 1 → usar reducción
     if x > 1:
-        return (PI / 2) - (1 / x)
+        return (PI / 2) - arctan(1 / x)
+
+    # Si es menor a -1 → usar reducción
     if x < -1:
-        return (-PI / 2) - (1 / x)
+        return (-PI / 2) - arctan(1 / x)
+
 
 # Convierte radianes a grados
 def radianes_a_grados(radianes):
@@ -93,38 +97,39 @@ def calcular_tiro(distancia, altura):
     return angulo, v0
 
 # Programa principal interactivo desde terminal
-print("=== Simulador matemático de tiro parabólico ===")
-print("Use 'salir' para terminar.\n")
+if __name__ == "__main__": 
+    print("=== Simulador matemático de tiro parabólico ===")
+    print("Use 'salir' para terminar.\n")
 
-seguir = 1
-while seguir == 1:
-    texto_R = input("Distancia horizontal máxima (m): ")
-    if texto_R == "salir":
-        seguir = 0
-    if seguir == 1:
-        texto_H = input("Altura máxima (m): ")
-        if texto_H == "salir":
+    seguir = 1
+    while seguir == 1:
+        texto_R = input("Distancia horizontal máxima (m): ")
+        if texto_R == "salir":
             seguir = 0
+        if seguir == 1:
+            texto_H = input("Altura máxima (m): ")
+            if texto_H == "salir":
+                seguir = 0
 
-    if seguir == 1:
-        valido_R = es_numero(texto_R)
-        valido_H = es_numero(texto_H)
-        if valido_R == 1:
-            if valido_H == 1:
-                R = float(texto_R)
-                H = float(texto_H)
-                resultado = calcular_tiro(R, H)
-                if resultado != "Error01":
-                    angulo = resultado[0]
-                    velocidad = resultado[1]
-                    print("\nResultados:")
-                    print("  Ángulo de lanzamiento:", round(angulo, 4), "°")
-                    print("  Velocidad inicial:", round(velocidad, 4), "m/s\n")
-        if valido_R == 0:
-            print("Entrada no válida.\n")
-        if valido_H == 0:
-            print("Entrada no válida.\n")
+        if seguir == 1:
+            valido_R = es_numero(texto_R)
+            valido_H = es_numero(texto_H)
+            if valido_R == 1:
+                if valido_H == 1:
+                    R = float(texto_R)
+                    H = float(texto_H)
+                    resultado = calcular_tiro(R, H)
+                    if resultado != "Error01":
+                        angulo = resultado[0]
+                        velocidad = resultado[1]
+                        print("\nResultados:")
+                        print("  Ángulo de lanzamiento:", round(angulo, 4), "°")
+                        print("  Velocidad inicial:", round(velocidad, 4), "m/s\n")
+            if valido_R == 0:
+                print("Entrada no válida.\n")
+            if valido_H == 0:
+                print("Entrada no válida.\n")
 
-print("Programa finalizado.")
+    print("Programa finalizado.")
 
 
