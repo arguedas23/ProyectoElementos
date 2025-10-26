@@ -21,9 +21,6 @@ def sin_grados(angulo, terms=7):
         seno += signo * termino
     return seno
 
-
-PI = 3.141592653589793
-
 def arctan(x):
     # Si está en el rango [-1, 1]
     if x >= -1 and x <= 1:
@@ -87,7 +84,7 @@ def calcular_tiro(distancia, altura):
     if es_numero_alt == 0:
         return "Error01"
 
-    g = 9.8
+    g = 9.77589
     relacion = (4 * altura) / distancia               # Relación 4H/R
     theta_radianes = arctan(relacion)                 # Ángulo en radianes
     angulo = radianes_a_grados(theta_radianes)        # Ángulo en grados
