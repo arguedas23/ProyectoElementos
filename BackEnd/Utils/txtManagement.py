@@ -1,4 +1,5 @@
 from Utils.ParabolicCalculation import calcular_tiro
+import os
 
 def guardar_datos(nombre_archivo, distancia, altura, angulo, velocidad):
     """Guarda una nueva combinación en el archivo de texto"""
@@ -37,7 +38,6 @@ def buscar_datos(nombre_archivo, distancia, altura):
     """Busca si ya existe la combinación (distancia, altura)"""
     if type(nombre_archivo) != str:
         return "Error03"
-
     registros = cargar_datos(nombre_archivo)
     i = 0
     while i < len(registros):

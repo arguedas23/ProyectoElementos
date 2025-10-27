@@ -1,67 +1,31 @@
 from Utils.txtManagement import obtener_resultado
+from flask import Flask, request, jsonify
+import os 
 
-ruta_txt = "Assets/data.txt"
+app = Flask(__name__)
 
-print("=== Simulador de Tiro Parabólico con Registro ===")
-print("Escriba 'salir' para terminar.\n")
+@app.route('/parabolicComponents', methods=['POST'])
+def getParabolicComponents():
+    data = request.get_json()
+    height = data.get("height")
+    distance = data.get("distance")
 
-seguir = 1
+    if height is None or distance is None:
+        return jsonify({"error": "Faltan parámetros: height o distance"}), 400
 
-while seguir == 1:
-    texto_R = input("Distancia horizontal máxima (m): ")
-    if texto_R == "salir":
-        seguir = 0
+    path = os.path.join(os.path.dirname(__file__), "./Assets/data.txt")
+    path = os.path.abspath(path)
 
-    if seguir == 1:
-        texto_H = input("Altura máxima (m): ")
-        if texto_H == "salir":
-            seguir = 0
+    res = obtener_resultado(path, distance, height)
 
-    if seguir == 1:
-        # Verifica que las entradas sean números válidos (solo dígitos y un punto)
-        valido_R = 1
-        valido_H = 1
+    result = {
+        "degrees": res[0],
+        "speed": res[1]
+    }
 
-        i = 0
-        puntos_R = 0
-        while i < len(texto_R):
-            c = texto_R[i]
-            if c == ".":
-                puntos_R = puntos_R + 1
-            else:
-                if c < "0" or c > "9":
-                    valido_R = 0
-            i = i + 1
-        if puntos_R > 1:
-            valido_R = 0
+    return jsonify(result)
 
-        i = 0
-        puntos_H = 0
-        while i < len(texto_H):
-            c = texto_H[i]
-            if c == ".":
-                puntos_H = puntos_H + 1
-            else:
-                if c < "0" or c > "9":
-                    valido_H = 0
-            i = i + 1
-        if puntos_H > 1:
-            valido_H = 0
 
-        if valido_R == 1:
-            if valido_H == 1:
-                R = float(texto_R)
-                H = float(texto_H)
-                resultado = obtener_resultado(ruta_txt, R, H)
-                if resultado != "Error05":
-                    print("\nResultados:")
-                    print("  Ángulo de lanzamiento:", round(resultado[0], 4), "°")
-                    print("  Velocidad inicial:", round(resultado[1], 4), "m/s\n")
-                else:
-                    print("Error en el cálculo.\n")
-            else:
-                print("Altura no válida.\n")
-        else:
-            print("Distancia no válida.\n")
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5000)
 
-print("Programa finalizado.")
