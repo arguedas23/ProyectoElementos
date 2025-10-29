@@ -1,4 +1,4 @@
-from Utils.ParabolicCalculation import calcular_tiro
+from ParabolicCalculation import calcular_tiro, es_numero
 import os
 
 def guardar_datos(nombre_archivo, distancia, altura, angulo, velocidad):
@@ -6,17 +6,23 @@ def guardar_datos(nombre_archivo, distancia, altura, angulo, velocidad):
     if type(nombre_archivo) != str:
         return "Error01"
 
+    # Crear directorio si no existe
+    os.makedirs(os.path.dirname(nombre_archivo), exist_ok=True)
+    
     manejador = open(nombre_archivo, "a")
-    linea = str(distancia) + "," + str(altura) + "," + str(angulo) + "," + str(velocidad) + "\n"
+    linea = f"{distancia},{altura},{angulo},{velocidad}\n"
     manejador.write(linea)
     manejador.close()
     return None
-
 
 def cargar_datos(nombre_archivo):
     """Carga todas las líneas del archivo y las convierte en lista"""
     if type(nombre_archivo) != str:
         return "Error02"
+
+    # Si el archivo no existe, retornar lista vacía
+    if not os.path.exists(nombre_archivo):
+        return []
 
     manejador = open(nombre_archivo, "r")
     contenido = manejador.readlines()
@@ -33,7 +39,6 @@ def cargar_datos(nombre_archivo):
         i = i + 1
     return lista
 
-
 def buscar_datos(nombre_archivo, distancia, altura):
     """Busca si ya existe la combinación (distancia, altura)"""
     if type(nombre_archivo) != str:
@@ -48,7 +53,6 @@ def buscar_datos(nombre_archivo, distancia, altura):
         i = i + 1
     return None
 
-
 def obtener_resultado(nombre_archivo, distancia, altura):
     """
     Si la combinación ya está guardada, la muestra.
@@ -59,12 +63,10 @@ def obtener_resultado(nombre_archivo, distancia, altura):
 
     existente = buscar_datos(nombre_archivo, distancia, altura)
     if existente != None:
-        print("Resultado obtenido del archivo.")
         return existente
 
     nuevo = calcular_tiro(distancia, altura)
     if nuevo != "Error01":
         guardar_datos(nombre_archivo, distancia, altura, nuevo[0], nuevo[1])
-        print("Resultado calculado y guardado.")
         return nuevo
     return "Error05"
