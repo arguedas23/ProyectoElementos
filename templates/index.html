@@ -7,12 +7,19 @@
         form { margin: 20px 0; }
         input { margin: 5px; padding: 5px; }
         button { padding: 8px 15px; margin: 10px 0; }
-        .resultado { margin-top: 20px; padding: 10px; background: #f0f0f0; }
+        .resultado { margin-top: 20px; padding: 10px; background: #09b31767; }
+        
+    /* Este estilo hace que la página se vea sencilla y ordenada.
+           El color de fondo del resultado es un verde suave que destaca los datos finales. */
+
     </style>
 </head>
 <body>
     <h2>Calculadora Parabólica</h2>
-    
+    <!-- Este texto es el del titulo de la propia pagina web -->
+    <p>Bienvenido(a) a la Calculadora Parabólica. Esta herramienta te ayudará a calcular la velocidad y el ángulo de la parábola mediante datos de distacia y altura . </p>
+    <p>Por favor, introduzca los valores que desea calcular en los recuadros correspondientes.</p>
+    <!-- estos 2 parrafos indican la propia funcion de la herramienta de calculadora, ademas de externar al usuario de introducir los datos en el recuadro pertinente-->
     <form onsubmit="calcular(event)">
         <div>
             <label>Distancia (m):</label>
@@ -24,12 +31,19 @@
         </div>
         <button type="submit">Calcular</button>
     </form>
+    <!--  Esta sección muestra los resultados después de presionar "Calcular".
+         Está oculta al inicio (display:none) y se muestra cuando llegan los datos. -->
 
     <div id="resultado" class="resultado" style="display:none">
         <h3>Resultados:</h3>
+        <!--Este es el head del resultado del calculo de la parabola-->
+        <p>Sus resultados son: </p>
+        <!--Comentario de resultado-->
         <p>Ángulo: <span id="degrees">--</span> grados</p>
         <p>Velocidad: <span id="speed">--</span> m/s</p>
     </div>
+    <!--El script captura los valores ingresados y los envía al servidor Flask usando fetch().
+         Me parece bien que se use async/await y que se maneje el error con try/catch-->
 
     <script>
         async function calcular(event) {
@@ -53,8 +67,11 @@
                 
             } catch (error) {
                 alert('Error: ' + error.message);
+               
             }
         }
+        
     </script>
 </body>
+<!--Aca el fin de body, o que se le va a mostrar al usuario dentro de -->
 </html>
