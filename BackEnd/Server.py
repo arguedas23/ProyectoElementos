@@ -1,11 +1,21 @@
 from Utils.txtManagement import obtener_resultado
 from flask import Flask, request, jsonify
+from flask import Flask, render_template
 import os 
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    template_folder=os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "Templates")
+    ),
+)
 
 # Ruta global del archivo de datos (accesible por POST y GET)
 DATA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "Assets/data.txt"))
+
+@app.route ('/')
+def index():
+    return render_template ("index.html")
 
 @app.route('/parabolicComponents', methods=['POST'])
 def getParabolicComponents():
@@ -41,8 +51,5 @@ def get_parabolic_components():
 
 
 if __name__ == '__main__':
-    print("Servidor ejecutándose en http://127.0.0.1:5000/parabolicComponents?distance=20&height=10")
+    print("Servidor ejecutándose en http://127.0.0.1:5000")
     app.run(debug=True, host='0.0.0.0', port=5000)
-
-
-
