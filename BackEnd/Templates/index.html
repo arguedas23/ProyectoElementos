@@ -2,196 +2,417 @@
 <html>
 <head>
     <title>Calculadora Parabólica</title>
-    <!-- Importo la librería Chart.js desde un CDN para poder hacer gráficas, con la propia autorizacion del profe -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
-        /* Estilos básicos para que la página se vea ordenada y sencilla */
-        body { font-family: Arial; margin: 50px; }
-        form { margin: 20px 0; }
-        input { margin: 5px; padding: 5px; }
-        button { padding: 8px 15px; margin: 10px 0; }
-        
-        /* El div de resultados tiene un fondo verde clarito para dar a enter uan repuesta correcta */
-        .resultado { margin-top: 20px; padding: 10px; background: #09b31767; }
-        
-        /* Estilo para mostrar errores con fondo rojo */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 40px; 
+            border-radius: 15px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2); 
+        }
+        h2 { 
+            color: #2c3e50; 
+            border-bottom: 4px solid #667eea; 
+            padding-bottom: 15px;
+            margin-top: 0;
+            font-size: 32px;
+        }
+        .description {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+        .description p {
+            margin: 10px 0;
+            color: #555;
+            line-height: 1.6;
+        }
+        .description ul {
+            margin: 10px 0;
+            padding-left: 25px;
+        }
+        .description li {
+            margin: 8px 0;
+            color: #666;
+        }
+        form { 
+            margin: 30px 0;
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+        }
+        .form-group { 
+            margin: 20px 0; 
+        }
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: 600; 
+            color: #2c3e50;
+            font-size: 15px;
+        }
+        input { 
+            width: 100%; 
+            padding: 12px 15px; 
+            border: 2px solid #ddd; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        input:focus { 
+            outline: none; 
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        button { 
+            width: 100%;
+            padding: 15px 30px; 
+            margin: 20px 0 0 0; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 18px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        button:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .resultado { 
+            margin-top: 30px; 
+            padding: 25px; 
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-radius: 10px; 
+            border-left: 6px solid #4caf50;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        .resultado h3 { 
+            margin-top: 0; 
+            color: #2e7d32;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .resultado-adicional { 
+            margin-top: 20px; 
+            padding: 20px; 
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 10px; 
+            border-left: 6px solid #2196f3;
+        }
+        .resultado-adicional h4 { 
+            margin-top: 0; 
+            color: #1565c0;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
         .error { 
             margin-top: 20px; 
-            padding: 15px; 
+            padding: 18px; 
             background: #ffebee; 
-            border-left: 4px solid #f44336;
+            border-left: 6px solid #f44336;
             color: #c62828;
-            border-radius: 4px;
-            display: none; /* Empieza oculto hasta que haya un error */
+            border-radius: 8px;
+            display: none;
+            font-weight: 600;
+            box-shadow: 0 3px 10px rgba(244, 67, 54, 0.2);
         }
-        
-        /* Estilo para advertencias con fondo naranja */
         .warning {
             margin-top: 20px;
-            padding: 15px;
+            padding: 18px;
             background: #fff3e0;
-            border-left: 4px solid #ff9800;
+            border-left: 6px solid #ff9800;
             color: #e65100;
-            border-radius: 4px;
-            display: none; /* También empieza oculto */
+            border-radius: 8px;
+            display: none;
+            font-weight: 600;
+            box-shadow: 0 3px 10px rgba(255, 152, 0, 0.2);
         }
-        
-        /* Contenedor de la gráfica con sombra para que se vea bonito xd */
         .grafica-container { 
             margin-top: 30px; 
-            max-width: 700px; 
             background: white; 
-            padding: 20px; 
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            display: none; /* Se muestra solo después de calcular es decir dar el resultado*/
+            padding: 25px; 
+            border-radius: 10px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            display: none;
+            border: 2px solid #e0e0e0;
         }
-
+        .grafica-container h3 {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+        .info-item {
+            margin: 12px 0;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            transition: transform 0.2s;
+        }
+        .info-item:hover {
+            transform: translateX(5px);
+        }
+        .info-item strong { 
+            color: #2c3e50;
+            font-size: 16px;
+        }
+        .info-item span { 
+            color: #667eea;
+            font-weight: bold; 
+            font-size: 20px;
+        }
     </style>
 </head>
 <body>
-    <h2>Calculadora Parabólica</h2>
-    
-    <!-- Descripción de lo que hace la calculadora -->
-    <p>Bienvenido(a) a la Calculadora Parabólica. Esta herramienta te ayudará a calcular la velocidad y el ángulo de la parábola mediante datos de distacia y altura . </p>
-    <p>Por favor, introduzca los valores que desea calcular en los recuadros correspondientes.</p>
-
-    <!-- Formulario donde el usuario ingresa la distancia y altura -->
-    <form onsubmit="calcular(event)">
-        <div>
-            <label>Distancia (m):</label>
-            <!-- El input tiene un valor por defecto de 20, acepta decimales y debe ser mayor a 0.1 sino genera un error y no deja avazar el la pagina -->
-            <input type="number" id="distance" value="20" step="0.1" required min="0.1">
+    <div class="container">
+        <h2>Calculadora Parabólica</h2>
+        
+        <div class="description">
+            <p><strong>Bienvenido a la Calculadora de Movimiento Parabólico.</strong></p>
+            <p>Esta herramienta te permite calcular todos los parámetros del movimiento parabólico a partir de la distancia horizontal máxima y la altura máxima:</p>
+            <ul>
+                <li>Ángulo de lanzamiento (θ₀)</li>
+                <li>Velocidad inicial (v₀)</li>
+                <li>Tiempo de vuelo (T)</li>
+                <li>Velocidad horizontal (Vₓ)</li>
+            </ul>
         </div>
-        <div>
-            <label>Altura (m):</label>
-            <!-- Lo mismo para la altura, valor por defecto de 10 y de igual manera tiene que ser un valo a 0.1 sino genera un error -->
-            <input type="number" id="height" value="10" step="0.1" required min="0.1">
+
+        <form onsubmit="calcular(event)">
+            <div class="form-group">
+                <label>Distancia horizontal máxima (R) en metros:</label>
+                <input type="number" id="distance" value="20" step="0.1" required min="0.1" placeholder="Ej: 20">
+            </div>
+            <div class="form-group">
+                <label>Altura máxima (H) en metros:</label>
+                <input type="number" id="height" value="10" step="0.1" required min="0.1" placeholder="Ej: 10">
+            </div>
+            <button type="submit">Calcular</button>
+        </form>
+        
+        <div id="error-message" class="error"></div>
+        <div id="warning-message" class="warning"></div>
+
+        <div id="resultado" class="resultado" style="display:none">
+            <h3>Resultados Principales</h3>
+            <div class="info-item">
+                <strong>Ángulo de lanzamiento (θ₀):</strong> 
+                <span id="degrees">--</span>
+            </div>
+            <div class="info-item">
+                <strong>Velocidad inicial (v₀):</strong> 
+                <span id="speed">--</span>
+            </div>
+            
+            <div class="resultado-adicional">
+                <h4>Cálculos Adicionales</h4>
+                <div class="info-item">
+                    <strong>Tiempo de vuelo (T):</strong> 
+                    <span id="tiempo">--</span>
+                </div>
+                <div class="info-item">
+                    <strong>Velocidad horizontal (Vₓ):</strong> 
+                    <span id="velocidad-horizontal">--</span>
+                </div>
+            </div>
         </div>
-        <button type="submit">Calcular</button>
-    </form>
-    
-    <!-- Divs para mostrar mensajes de error y advertencias parar que el usuario vea que esta trabajando con valores que ecodigo no puede calcular o lo está haciendo mal -->
-    <div id="error-message" class="error"></div>
-    <div id="warning-message" class="warning"></div>
 
-    <!-- Div que muestra los resultados calculados (ángulo y velocidad) -->
-    <div id="resultado" class="resultado" style="display:none">
-        <h3>Resultados:</h3>
-        <p>Sus resultados son: </p>
-        <p>Ángulo: <span id="degrees">--</span> grados</p>
-        <p>Velocidad: <span id="speed">--</span> m/s</p>
-    </div>
-
-    <!-- Contenedor donde se dibuja la gráfica de la trayectoria -->
-    <div id="grafica-container" class="grafica-container">
-        <h3>Trayectoria Parabólica</h3>
-        <canvas id="grafica"></canvas>
+        <div id="grafica-container" class="grafica-container">
+            <h3>Trayectoria Parabólica</h3>
+            <canvas id="grafica"></canvas>
+        </div>
     </div>
 
     <script>
-        // Variable global para guardar la gráfica y poder eliminarla si se calcula otra
+        const PI = 3.141592653589793;
         let miGrafica = null;
+        let useServer = false;
 
-        // Función que muestra un mensaje de error en pantalla
+        async function detectarServidor() {
+            try {
+                const response = await fetch('/parabolicComponents', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({distance: 1, height: 1})
+                });
+                useServer = true;
+            } catch (error) {
+                useServer = false;
+            }
+        }
+
+        detectarServidor();
+
+        function factorial(n) {
+            if (n === 0 || n === 1) return 1;
+            let resultado = 1;
+            for (let i = 2; i <= n; i++) {
+                resultado *= i;
+            }
+            return resultado;
+        }
+
+        function sin_grados(angulo, terms = 7) {
+            let x = angulo * (PI / 180);
+            x = ((x + PI) % (2 * PI)) - PI;
+            
+            let seno = 0;
+            for (let n = 0; n < terms; n++) {
+                const signo = Math.pow(-1, n);
+                const termino = Math.pow(x, 2 * n + 1) / factorial(2 * n + 1);
+                seno += signo * termino;
+            }
+            return seno;
+        }
+
+        function arctan(x) {
+            if (x >= -1 && x <= 1) {
+                let arc = 0;
+                for (let i = 0; i < 10; i++) {
+                    const signo = Math.pow(-1, i);
+                    const termino = Math.pow(x, 2 * i + 1) / (2 * i + 1);
+                    arc += signo * termino;
+                }
+                return arc;
+            }
+            
+            if (x > 1) {
+                return (PI / 2) - arctan(1 / x);
+            }
+            
+            if (x < -1) {
+                return (-PI / 2) - arctan(1 / x);
+            }
+        }
+
+        function radianes_a_grados(radianes) {
+            return radianes * (180 / PI);
+        }
+
+        function calcular_tiro(distancia, altura) {
+            const g = 9.77589;
+            const relacion = (4 * altura) / distancia;
+            const theta_radianes = arctan(relacion);
+            const angulo = radianes_a_grados(theta_radianes);
+            const seno_theta = sin_grados(angulo);
+            const seno_cuadrado = seno_theta * seno_theta;
+            const v0 = Math.sqrt((2 * g * altura) / seno_cuadrado);
+            return { angulo: angulo, v0: v0 };
+        }
+
+        function calcular_tiempo_vuelo(v0, angulo) {
+            const g = 9.8;
+            const seno = sin_grados(angulo);
+            const T = (2 * v0 * seno) / g;
+            return T;
+        }
+
+        function calcular_velocidad_horizontal(v0, angulo) {
+            const seno = sin_grados(angulo);
+            let coseno_cuadrado = 1 - (seno * seno);
+            if (coseno_cuadrado < 0) {
+                coseno_cuadrado = 0;
+            }
+            const coseno = Math.sqrt(coseno_cuadrado);
+            const Vx = v0 * coseno;
+            return Vx;
+        }
+
         function mostrarError(mensaje) {
             const errorDiv = document.getElementById('error-message');
-            errorDiv.textContent = '❌ Error: ' + mensaje;
+            errorDiv.textContent = 'ERROR: ' + mensaje;
             errorDiv.style.display = 'block';
             
-            // Oculto los resultados y la gráfica porque hubo un error
             document.getElementById('resultado').style.display = 'none';
             document.getElementById('grafica-container').style.display = 'none';
             document.getElementById('warning-message').style.display = 'none';
             
-            // Después de 8 segundos el mensaje se oculta solo
             setTimeout(() => {
                 errorDiv.style.display = 'none';
             }, 8000);
         }
 
-        // Función similar pero para advertencias (no son errores críticos)
         function mostrarAdvertencia(mensaje) {
             const warningDiv = document.getElementById('warning-message');
-            warningDiv.textContent = '⚠️ Advertencia: ' + mensaje;
+            warningDiv.textContent = 'ADVERTENCIA: ' + mensaje;
             warningDiv.style.display = 'block';
             
-            // Se oculta después de 6 segundos
             setTimeout(() => {
                 warningDiv.style.display = 'none';
             }, 6000);
         }
 
-        // Función que valida que los datos ingresados sean correctos
         function validarEntradas(distancia, altura) {
-            // Primero se verifica que ambos sean números válidos
             if (isNaN(distancia) || isNaN(altura)) {
                 mostrarError('Los valores ingresados no son números válidos');
                 return false;
             }
 
-            // La distancia debe ser positiva por lo contrario
             if (distancia <= 0) {
                 mostrarError('La distancia debe ser mayor a 0 metros');
                 return false;
             }
 
-            // La altura también debe ser positiva por lo contrario pues es error
             if (altura <= 0) {
                 mostrarError('La altura debe ser mayor a 0 metros');
                 return false;
             }
 
-            // Verifico que la relación altura/distancia sea razonable
-            // Si la altura es más del doble de la distancia, probablemente hay un error
             const relacion = altura / distancia;
-            if (relacion <= 0) {
-                mostrarError('La altura es demasiado grande comparada con la distancia. Relación máxima recomendada: altura < 0.1 × distancia');
+            if (relacion > 2) {
+                mostrarError('La altura es demasiado grande comparada con la distancia. Relación máxima recomendada: altura < 2 × distancia');
                 return false;
             }
 
-            // Advertencia si los valores son muy pequeños (pueden dar resultados imprecisos)
             if (distancia < 1 || altura < 0.5) {
                 mostrarAdvertencia('Los valores son muy pequeños. Los resultados pueden tener menor precisión');
             }
 
-            // Advertencia si los valores son muy grandes
             if (distancia > 1000 || altura > 500) {
                 mostrarAdvertencia('Los valores son muy grandes. Asegúrese de que las unidades son correctas (metros)');
             }
 
-            // Si pasó todas las validaciones, retorno true y se prosigue con lo demás
             return true;
         }
 
-        // Función que calcula los puntos de la trayectoria parabólica
         function calcularTrayectoria(v0, angulo, distancia, altura) {
-            const g = 9.77589; // Gravedad en m/s²
-            
-            // Convierte el ángulo de grados a radianes
-            const anguloRad = angulo * (Math.PI / 180);
-            
-            // Calculo las componentes de la velocidad
-            const vx = v0 * Math.cos(anguloRad); // Velocidad horizontal
-            const vy = v0 * Math.sin(anguloRad); // Velocidad vertical
-            
-            // Calculo cuánto tiempo tarda en recorrer la distancia
+            const g = 9.77589;
+            const anguloRad = angulo * (PI / 180);
+            const vx = v0 * Math.cos(anguloRad);
+            const vy = v0 * Math.sin(anguloRad);
             const tiempoTotal = distancia / vx;
-            
-            // Array donde voy a guardar los puntos de la trayectoria
             const puntos = [];
-            const numPuntos = 50; // Voy a calcular 50 puntos
+            const numPuntos = 50;
             
-            // Ciclo para calcular cada punto de la trayectoria
             for (let i = 0; i <= numPuntos; i++) {
-                // Calculo el tiempo para este punto específico
                 const t = (tiempoTotal * i) / numPuntos;
+                const x = vx * t;
+                const y = vy * t - (0.5 * g * t * t);
                 
-                // Fórmulas del movimiento parabólico
-                const x = vx * t; // Posición horizontal
-                const y = vy * t - (0.5 * g * t * t); // Posición vertical
-                
-                // Solo agrego puntos donde y sea positivo (sobre el suelo)
                 if (y >= 0) {
                     puntos.push({ x: x, y: y });
                 }
@@ -200,41 +421,37 @@
             return puntos;
         }
 
-        // Función que dibuja la gráfica usando Chart.js, (la cual fue autorizada por el profe) viva el anarquismo
         function dibujarGrafica(puntos, distancia, altura) {
             const ctx = document.getElementById('grafica').getContext('2d');
             
-            // Si ya existe una gráfica, se elimina para generar una totalmente nueva
             if (miGrafica) {
                 miGrafica.destroy();
             }
             
-            // se crea la gráfica con Chart.js
             miGrafica = new Chart(ctx, {
-                type: 'line', // Tipo de gráfica: línea
+                type: 'line',
                 data: {
                     datasets: [{
                         label: 'Trayectoria',
-                        data: puntos, // Los puntos que calculé antes
-                        borderColor: '#09b317', // Color verde para la línea
-                        backgroundColor: 'rgba(9, 179, 23, 0.1)', // Relleno verde claro
+                        data: puntos,
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
                         borderWidth: 3,
-                        pointRadius: 0, // No muestro puntos individuales
-                        tension: 0.4, // Un poco de curvatura en la línea
-                        fill: true // Relleno debajo de la curva
+                        pointRadius: 0,
+                        tension: 0.4,
+                        fill: true
                     }, {
-                        // Punto rojo que marca la altura máxima en la grafica
                         label: 'Punto máximo',
-                        data: [{ x: distancia / 2, y: altura }], // Está en la mitad de la distancia
-                        borderColor: '#ff6b6b',
-                        backgroundColor: '#ff6b6b',
-                        pointRadius: 6,
-                        pointHoverRadius: 8,
-                        showLine: false // Solo el punto, sin línea
+                        data: [{ x: distancia / 2, y: altura }],
+                        borderColor: '#f44336',
+                        backgroundColor: '#f44336',
+                        pointRadius: 8,
+                        pointHoverRadius: 10,
+                        showLine: false
                     }]
                 },
                 options: {
-                    responsive: true, // Se adapta al tamaño de la pantalla
+                    responsive: true,
                     maintainAspectRatio: true,
                     scales: {
                         x: {
@@ -243,17 +460,17 @@
                             title: {
                                 display: true,
                                 text: 'Distancia (m)',
-                                font: { size: 14 }
+                                font: { size: 14, weight: 'bold' }
                             },
-                            min: 0 // El eje X empieza en 0
+                            min: 0
                         },
                         y: {
                             title: {
                                 display: true,
                                 text: 'Altura (m)',
-                                font: { size: 14 }
+                                font: { size: 14, weight: 'bold' }
                             },
-                            min: 0 // El eje Y también empieza en 0
+                            min: 0
                         }
                     },
                     plugins: {
@@ -262,7 +479,6 @@
                             position: 'top'
                         },
                         tooltip: {
-                            // se personaliza lo que muestra el (es decir ventana emergente con texto que aparece cuando el usuario pasa el cursor sobre un elemento en una interfaz gráfica ) al pasar el mouse
                             callbacks: {
                                 label: function(context) {
                                     return `(${context.parsed.x.toFixed(2)}m, ${context.parsed.y.toFixed(2)}m)`;
@@ -274,74 +490,77 @@
             });
         }
 
-        // Función principal que se ejecuta cuando el usuario presiona "Calcular"
         async function calcular(event) {
-            event.preventDefault(); // Evito que el formulario recargue la página
+            event.preventDefault();
             
-            // Obtengo los valores que el usuario escribió
             const distance = parseFloat(document.getElementById('distance').value);
             const height = parseFloat(document.getElementById('height').value);
             
-            // Primero valido los datos antes de enviarlos al servidor
             if (!validarEntradas(distance, height)) {
-                return; // Si hay error, no continúo
+                return;
             }
             
             try {
-                // Hago una petición POST al servidor Flask
-                const response = await fetch('/parabolicComponents', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({distance: distance, height: height})
-                });
+                let angulo, v0, tiempoVuelo, velocidadHorizontal;
                 
-                // Verifico si la respuesta del servidor fue exitosa
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    mostrarError(errorData.error || 'Error en la comunicación con el servidor');
-                    return;
-                }
-                
-                // Convierto la respuesta a JSON
-                const data = await response.json();
-                
-                // Verifico si el servidor mandó un error
-                if (data.error) {
-                    mostrarError(data.error);
-                    return;
-                }
-                
-                // Verifico que los datos recibidos sean números válidos
-                if (isNaN(data.degrees) || isNaN(data.speed)) {
-                    mostrarError('El servidor devolvió valores inválidos. Verifique los datos ingresados.');
-                    return;
+                if (useServer) {
+                    const response = await fetch('/parabolicComponents', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({distance: distance, height: height})
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        mostrarError(errorData.error || 'Error en la comunicación con el servidor');
+                        return;
+                    }
+                    
+                    const data = await response.json();
+                    
+                    if (data.error) {
+                        mostrarError(data.error);
+                        return;
+                    }
+                    
+                    angulo = data.degrees;
+                    v0 = data.speed;
+                    tiempoVuelo = data.tiempo_vuelo;
+                    velocidadHorizontal = data.velocidad_horizontal;
+                    
+                } else {
+                    const resultado = calcular_tiro(distance, height);
+                    
+                    if (isNaN(resultado.angulo) || isNaN(resultado.v0)) {
+                        mostrarError('Error en el cálculo. Verifique los datos ingresados.');
+                        return;
+                    }
+                    
+                    angulo = resultado.angulo;
+                    v0 = resultado.v0;
+                    tiempoVuelo = calcular_tiempo_vuelo(v0, angulo);
+                    velocidadHorizontal = calcular_velocidad_horizontal(v0, angulo);
                 }
 
-                // Advierte si la velocidad es muy alta (puede indicar un error en los datos)
-                if (data.speed > 1000) {
-                    mostrarAdvertencia('La velocidad calculada es muy alta (' + data.speed.toFixed(2) + ' m/s). Verifique los valores ingresados.');
+                if (v0 > 1000) {
+                    mostrarAdvertencia('La velocidad calculada es muy alta (' + v0.toFixed(2) + ' m/s). Verifique los valores ingresados.');
                 }
                 
-                // Si todo está bien,  se oculta cualquier mensaje de error previo
                 document.getElementById('error-message').style.display = 'none';
-                
-                // Muestra los resultados en pantalla
-                document.getElementById('degrees').textContent = data.degrees.toFixed(2);
-                document.getElementById('speed').textContent = data.speed.toFixed(2);
+                document.getElementById('degrees').textContent = angulo.toFixed(4) + '°';
+                document.getElementById('speed').textContent = v0.toFixed(4) + ' m/s';
+                document.getElementById('tiempo').textContent = tiempoVuelo.toFixed(4) + ' s';
+                document.getElementById('velocidad-horizontal').textContent = velocidadHorizontal.toFixed(4) + ' m/s';
                 document.getElementById('resultado').style.display = 'block';
                 
-                // se generánm los puntos de la trayectoria y dibujo la gráfica
-                const puntos = calcularTrayectoria(data.speed, data.degrees, distance, height);
+                const puntos = calcularTrayectoria(v0, angulo, distance, height);
                 dibujarGrafica(puntos, distance, height);
                 document.getElementById('grafica-container').style.display = 'block';
                 
             } catch (error) {
-                // Si hubo algún error en la conexión con el servidor muestra este herror
-                mostrarError('No se pudo conectar con el servidor: ' + error.message);
+                mostrarError('Error en el cálculo: ' + error.message);
             }
         }
-        
     </script>
 </body>
 </html>
-<!-- fin del html :) espero se vea bonito-->

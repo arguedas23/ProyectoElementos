@@ -22,22 +22,22 @@ def sin_grados(angulo, terms=7):
     return seno
 
 def arctan(x):
-    # Si está en el rango [-1, 1]
+    # Si estÃ¡ en el rango [-1, 1]
     if x >= -1 and x <= 1:
         arc = 0
         i = 0
-        while i < 10:  # número de términos de la serie
+        while i < 10:  # nÃºmero de tÃ©rminos de la serie
             signo = (-1) ** i
             termino = (x ** (2 * i + 1)) / (2 * i + 1)
             arc = arc + signo * termino
             i = i + 1
         return arc
 
-    # Si es mayor a 1 → usar reducción
+    # Si es mayor a 1 â†’ usar reducciÃ³n
     if x > 1:
         return (PI / 2) - arctan(1 / x)
 
-    # Si es menor a -1 → usar reducción
+    # Si es menor a -1 â†’ usar reducciÃ³n
     if x < -1:
         return (-PI / 2) - arctan(1 / x)
 
@@ -46,7 +46,7 @@ def arctan(x):
 def radianes_a_grados(radianes):
     return radianes * (180 / PI)
 
-# Verifica si una cadena es un número (entero o decimal)
+# Verifica si una cadena es un nÃºmero (entero o decimal)
 def es_numero(texto):
     i = 0
     puntos = 0
@@ -66,8 +66,8 @@ def es_numero(texto):
         return 0
     return 1
 
-# Calcula el ángulo (θ0) y la velocidad inicial (v0)
-# usando las fórmulas físicas del movimiento parabólico
+# Calcula el Ã¡ngulo (Î¸0) y la velocidad inicial (v0)
+# usando las fÃ³rmulas fÃ­sicas del movimiento parabÃ³lico
 def calcular_tiro(distancia, altura):
     es_numero_dist = 0
     if type(distancia) == int:
@@ -85,26 +85,41 @@ def calcular_tiro(distancia, altura):
         return "Error01"
 
     g = 9.77589
-    relacion = (4 * altura) / distancia               # Relación 4H/R
-    theta_radianes = arctan(relacion)                 # Ángulo en radianes
-    angulo = radianes_a_grados(theta_radianes)        # Ángulo en grados
-    seno_theta = sin_grados(angulo)                   # Seno del ángulo
+    relacion = (4 * altura) / distancia               # RelaciÃ³n 4H/R
+    theta_radianes = arctan(relacion)                 # Ãngulo en radianes
+    angulo = radianes_a_grados(theta_radianes)        # Ãngulo en grados
+    seno_theta = sin_grados(angulo)                   # Seno del Ã¡ngulo
     seno_cuadrado = seno_theta * seno_theta
-    v0 = ((2 * g * altura) / seno_cuadrado) ** 0.5    # Fórmula de velocidad inicial
+    v0 = ((2 * g * altura) / seno_cuadrado) ** 0.5    # FÃ³rmula de velocidad inicial
     return angulo, v0
+
+def calcular_tiempo_vuelo(v0, angulo):
+    g = 9.8
+    seno = sin_grados(angulo)
+    T = (2 * v0 * seno) / g
+    return T
+
+def calcular_velocidad_horizontal(v0, angulo):
+    seno = sin_grados(angulo)
+    coseno_cuadrado = 1 - (seno * seno)
+    if coseno_cuadrado < 0:
+        coseno_cuadrado = 0
+    coseno = coseno_cuadrado ** 0.5
+    Vx = v0 * coseno
+    return Vx
 
 # Programa principal interactivo desde terminal
 if __name__ == "__main__": 
-    print("=== Simulador matemático de tiro parabólico ===")
+    print("=== Simulador matemÃ¡tico de tiro parabÃ³lico ===")
     print("Use 'salir' para terminar.\n")
 
     seguir = 1
     while seguir == 1:
-        texto_R = input("Distancia horizontal máxima (m): ")
+        texto_R = input("Distancia horizontal mÃ¡xima (m): ")
         if texto_R == "salir":
             seguir = 0
         if seguir == 1:
-            texto_H = input("Altura máxima (m): ")
+            texto_H = input("Altura mÃ¡xima (m): ")
             if texto_H == "salir":
                 seguir = 0
 
@@ -120,13 +135,11 @@ if __name__ == "__main__":
                         angulo = resultado[0]
                         velocidad = resultado[1]
                         print("\nResultados:")
-                        print("  Ángulo de lanzamiento:", round(angulo, 4), "°")
+                        print("  Ãngulo de lanzamiento:", round(angulo, 4), "Â°")
                         print("  Velocidad inicial:", round(velocidad, 4), "m/s\n")
             if valido_R == 0:
-                print("Entrada no válida.\n")
+                print("Entrada no vÃ¡lida.\n")
             if valido_H == 0:
-                print("Entrada no válida.\n")
+                print("Entrada no vÃ¡lida.\n")
 
     print("Programa finalizado.")
-
-
